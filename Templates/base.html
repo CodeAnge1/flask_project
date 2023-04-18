@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+          crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="../static/css/base.css"/>
+    <title>{{title}}</title>
+</head>
+<body>
+<header>
+    <input type="checkbox" id="burger">
+    <label for="burger">
+        <svg style="margin-left: 35px; margin-top: -5px; width: 24px;" height="24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M21 7.102H3v-2.4h18v2.4Zm0 6H3v-2.4h18v2.4Zm0 6H3v-2.4h18v2.4Z"
+                  fill="#999999"></path>
+        </svg>
+    </label>
+    <nav>
+        <ul>
+            <li><a href="#">x1</a></li>
+            <li><a href="#">x2</a></li>
+            <li><a href="#">x3</a></li>
+            <li><a href="#">x4</a></li>
+            <li><a href="#">x5</a></li>
+        </ul>
+    </nav>
+    <form action="" method="get">
+        <input style="width: 300px;" name="s" placeholder="Название фильма или имя актёра" type="search">
+        <button type="submit">&#128269;</button>
+    </form>
+</header>
+<!-- Begin page content -->
+<main role="main" class="container">
+    {% block content %}
+    {% endblock %}
+</main>
+</body>
+</html>
