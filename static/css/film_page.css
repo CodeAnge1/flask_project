@@ -2,17 +2,6 @@ img.poster {
     float: left;
     padding-left: 2%;
 }
-.style_button {
-    border: 2px solid black;
-    background: #ffffff;
-    border-radius: 35px;
-    width: 130px;
-    height: 45px;
-    margin-top: 10px;
-    margin-left: 30px;
-    padding-top: 0;
-    padding-left: 0;
-}
 .rowDark {
     font-size: 16px;
     line-height: normal;
@@ -35,16 +24,26 @@ img.poster {
     color: rgba(0,0,0,.8);
 }
 h1.name {
-    padding-left: 26%;
+    padding-left: 32%;
     font-weight: 800;
     color: black;
 }
 .trailer {
     float: right;
 }
-/*
-.style_button:hover {
-    size: 103%;
-    transition: 1s;
+.style_button {
+    border: 2px solid black;
+    background: #ffffff;
+    border-radius: 35px;
+    width: 130px;
+    height: 45px;
+    margin-top: 10px;
+    margin-left: 30px;
+    padding-top: 0;
+    padding-left: 0;
+    transition: 0.5s;
 }
-*/
+.style_button:hover {
+    transform: scale(1.05);
+    transition: 0.5s;
+}
