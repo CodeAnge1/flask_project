@@ -1,0 +1,70 @@
+body {
+  padding: 0;
+  margin-top: 40px;
+}
+header {
+    background: #1a1818;
+    overflow: hidden;
+    position: fixed;
+    z-index: 100;
+    width: 100%;
+    top: 0;
+}
+[for=burger] {
+    display: block;
+    left: 20px;
+    top: 10px;
+    width: 10px;
+    margin-left: 15px;
+    margin-top: 10px;
+    margin-bottom: 0px;
+}
+#burger {
+    display: none;
+}
+form {
+    float: right;
+    margin-top: -25px;
+    margin-bottom: 10px;
+    margin-right: 120px;
+}
+.container {
+    margin-top: 55px;
+}
+button {
+
+}
+nav {
+    display: none;
+    background: #1a1818;
+    position: fixed;
+    margin-top: 40px;
+    margin-left: 15px;
+    z-index: 100;
+    width: 20%;
+    top: 0;
+}
+#burger:checked + label + nav {
+    display: block;
+}
+a {
+    text-decoration: none;
+    color: white;
+}
+a:hover {
+    text-decoration: none;
+    color: white;
+    border-bottom: 2px solid white;
+}
+li {
+    text-decoration: none;
+    list-style: none;
+}
+.logo {
+    width: 100%;
+}
+.graphic-logo {
+    padding: 5px;
+    max-width: 10%;
+    box-sizing: border-box;
+}
