@@ -11,32 +11,34 @@
     <title>{{title}}</title>
 </head>
 <body>
-<header>
-    <input type="checkbox" id="burger">
-    <label for="burger">
-        <svg style="margin-left: 35px; margin-top: -5px; width: 24px;" height="24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path fill-rule="evenodd" d="M21 7.102H3v-2.4h18v2.4Zm0 6H3v-2.4h18v2.4Zm0 6H3v-2.4h18v2.4Z"
-                  fill="#999999"></path>
-        </svg>
-    </label>
-    <nav>
-        <ul>
-            <li><a href="#">x1</a></li>
-            <li><a href="#">x2</a></li>
-            <li><a href="#">x3</a></li>
-            <li><a href="#">x4</a></li>
-            <li><a href="#">x5</a></li>
-        </ul>
-    </nav>
-    <form action="" method="get">
-        <input style="width: 300px; opacity: 0;" name="s" placeholder="Название фильма или имя актёра" type="search">
-        <button style="opacity: 0;" type="submit">&#128269;</button>
-    </form>
-</header>
-<!-- Begin page content -->
-<main role="main" class="container">
-    {% block content %}
-    {% endblock %}
-</main>
+<div class="wrapper">
+    <header>
+        <input type="checkbox" id="burger">
+        <label for="burger">
+            <svg style="margin-left: 35px; margin-top: -5px; width: 24px;" height="24" fill="none"
+                 xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" d="M21 7.102H3v-2.4h18v2.4Zm0 6H3v-2.4h18v2.4Zm0 6H3v-2.4h18v2.4Z"
+                      fill="#999999"></path>
+            </svg>
+        </label>
+        <nav>
+            <ul>
+                <li><a href="#">x1</a></li>
+                <li><a href="#">x2</a></li>
+                <li><a href="#">x3</a></li>
+                <li><a href="#">x4</a></li>
+                <li><a href="#">x5</a></li>
+            </ul>
+        </nav>
+    </header>
+    <!-- Begin page content -->
+    <main role="main" class="container main-content">
+        {% block content %}
+        {% endblock %}
+    </main>
+    <footer>
+        <p>© 2018 Gandalf</p>
+    </footer>
+</div>
 </body>
 </html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Все фильмы</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="../static/css/all_films.css"/>
+
+    <title>Title</title>
+</head>
+{% extends "base.html" %}
+{% block content %}
+<body>
+<div class="film-block">
+    {% for film_group in films_dict['films'] %}
+    {% if loop.first %}
+    <div class="films-row without-bottom">
+        {% for film in film_group %}
+        <div class="film">
+            <div class="image">
+                <a class="styled-a" href="https://www.kinopoisk.ru/film/1072974/sr/1/">
+                    <img class="image"
+                         src="{{film['poster']}}">
+                </a>
+                {% if film['rating'] < 0 %}
+                <div class="film-rating"></div>
+                {% elif film['rating'] > 7.5 %}
+                <div class="film-rating green-rating">{{film['rating']}}</div>
+                {% elif film['rating'] > 5.0 %}
+                <div class="film-rating yellow-rating">{{film['rating']}}</div>
+                {% elif film['rating'] <= 5.0 %}
+                <div class="film-rating red-rating">{{film['rating']}}</div>
+                {% endif %}
+            </div>
+            <div class="film-info">
+                <a class="film-name" href="https://www.kinopoisk.ru/film/1072974/sr/1/">
+                    {% if film['name_len'] > 48 %}
+                    <p class="film-name">
+                    {{film['name'][:45]}}...
+                    </p>
+                    {% else %}
+                    <p class="film-name">
+                    {{film['name']}}
+                    </p>
+                    {% endif %}
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% elif loop.last %}
+    <div class="films-row without-up">
+        {% for film in film_group %}
+        <div class="film">
+            <div class="image">
+                <a class="styled-a" href="https://www.kinopoisk.ru/film/1072974/sr/1/">
+                    <img class="image"
+                         src="{{film['poster']}}">
+                </a>
+                {% if film['rating'] < 0 %}
+                <div class="film-rating"></div>
+                {% elif film['rating'] > 7.5 %}
+                <div class="film-rating green-rating">{{film['rating']}}</div>
+                {% elif film['rating'] > 5.0 %}
+                <div class="film-rating yellow-rating">{{film['rating']}}</div>
+                {% elif film['rating'] <= 5.0 %}
+                <div class="film-rating red-rating">{{film['rating']}}</div>
+                {% endif %}
+            </div>
+            <div class="film-info">
+                <a class="film-name" href="https://www.kinopoisk.ru/film/1072974/sr/1/">
+                    {% if film['name_len'] > 48 %}
+                    <p class="film-name">
+                    {{film['name'][:45]}}...
+                    </p>
+                    {% else %}
+                    <p class="film-name">
+                    {{film['name']}}
+                    </p>
+                    {% endif %}
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="films-row only-side">
+        {% for film in film_group %}
+        <div class="film">
+            <div class="image">
+                <a class="styled-a" href="https://www.kinopoisk.ru/film/1072974/sr/1/">
+                    <img class="image"
+                         src="{{film['poster']}}">
+                </a>
+                {% if film['rating'] < 0 %}
+                <div class="film-rating"></div>
+                {% elif film['rating'] > 7.5 %}
+                <div class="film-rating green-rating">{{film['rating']}}</div>
+                {% elif film['rating'] > 5.0 %}
+                <div class="film-rating yellow-rating">{{film['rating']}}</div>
+                {% elif film['rating'] <= 5.0 %}
+                <div class="film-rating red-rating">{{film['rating']}}</div>
+                {% endif %}
+            </div>
+            <div class="film-info">
+                <a class="film-name" href="https://www.kinopoisk.ru/film/1072974/sr/1/">
+                    {% if film['name_len'] > 48 %}
+                    <p class="film-name">
+                    {{film['name'][:45]}}...
+                    </p>
+                    {% else %}
+                    <p class="film-name">
+                    {{film['name']}}
+                    </p>
+                    {% endif %}
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endfor %}
+</div>
+</body>
+{% endblock %}
+</html>

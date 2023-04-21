@@ -1,0 +1,83 @@
+body, html {
+    background: linear-gradient(to bottom right, pink, orange);
+}
+.films-row {
+    display: flex;
+    background: #5fd4a9;
+}
+/*
+#6fd9d5
+*/
+.without-up {
+    border: solid 2px black;
+    border-top: solid 0px black;
+    margin-bottom: 25px;
+}
+.without-bottom {
+    border: solid 2px black;
+    border-bottom: solid 0px black;
+}
+.only-side {
+    border: solid 2px black;
+    border-bottom: solid 0px black;
+    border-top: solid 0px black;
+}
+.film {
+    border: solid 2px black;
+    border-bottom: solid 3px black;
+    margin: 22px;
+    padding: 0px;
+    max-height: 380px;
+}
+.film-info {
+    margin-top: -20px;
+    margin-bottom: 10px;
+}
+p.film-name {
+    position: relative;
+    bottom: 3px;
+    font-size: 1.2rem;
+    margin-top: 1px;
+    padding-left: 7px;
+    color: white;
+    min-width: 180px;
+    min-height: 100px;
+    background-color: #292828;
+}
+a.film-name {
+    position: relative;
+    top: 20px;
+}
+.film-name:hover {
+    text-decoration: none;
+    background-color: #292828;
+}
+.film-rating {
+    position: relative;
+    bottom: 40px; left: 105px;
+    align: center;
+    font-size: 18px;
+    padding-left: 11px;
+    padding-top: 1px;
+    margin-left: 15px;
+    width: 45px;
+    height: 30px;
+}
+.green-rating {
+    background-color: #3bc718;
+}
+.yellow-rating {
+    background-color: #ffd30f;
+}
+.red-rating {
+    background-color: #ed3e3e;
+}
+.styled-a {
+    text-decoration: none;
+    color: black;
+}
+.image {
+    width: 180px;
+    height: 270px;
+    border-top-radius: 13px;
+}

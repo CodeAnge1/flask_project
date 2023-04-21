@@ -7,8 +7,7 @@ from bs4 import BeautifulSoup
 def main():
     counter = 0
     for year in range(2023, 1884, -1):
-        for page in range(1, 10000):
-            print(page)
+        for page in range(1, 25):
             response = requests.get(url=f"https://www.kinopoisk.ru/s/type/film/list/1/order/rating/m_act[year]"
                                         f"/{year}/page/{page}/200")
             soup = BeautifulSoup(response.text, 'lxml')
@@ -52,8 +51,11 @@ def main():
                     time = film_info.find_all("span", class_="gray")[0].text
                     try:
                         time_and_original = time.split(', ')
-                        original_name = time_and_original[0]
-                        time = time_and_original[1]
+                        if len(time_and_original) > 1:
+                            original_name = time_and_original[0]
+                        else:
+                            original_name = None
+                        time = time_and_original[-1]
                     except Exception:
                         original_name = None
                     gray = film_info.find_all("span", class_="gray")[1].text.split('\n')
@@ -111,12 +113,11 @@ def main():
                     cursor.execute("INSERT INTO films VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", result)
                     connector.commit()
                 print(counter)
-        print("YEAR =", year)
 
 
 if __name__ == '__main__':
     db_name = "films_data.db"
-    connector = sqlite3.connect(db_name, timeout=15)
+    connector = sqlite3.connect(db_name, timeout=30)
     cursor = connector.cursor()
     cursor.execute("""CREATE TABLE IF NOT EXISTS films(
     name TEXT,

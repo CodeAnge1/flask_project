@@ -1,0 +1,26 @@
+.form-check-label {
+    margin-right: 25px;
+}
+#genres {
+     margin-left: 5px;
+}
+#switch-button {
+    margin-left: 15px;
+    margin-top: 7px;
+}
+.country-field {
+    margin-left: 30px;
+}
+.style-field {
+    margin-top: 10px;
+}
+#inputCountry {
+    width: 250px;
+}
+.form-select {
+    margin-bottom: 20px;
+}
+.form-check {
+    margin-left: 22px;
+    margin-bottom: 20px;
+}
