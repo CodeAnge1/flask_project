@@ -1,11 +1,16 @@
-import sqlite3
 import requests
 
+from data import db_session
+from data.films import Film
 from bs4 import BeautifulSoup
 
 
 def main():
-    counter = 0
+    film_counter = 0
+    db_name = "db/films.db"
+    db_session.global_init(db_name)
+    db_sess = db_session.create_session()
+    films_in_base = db_sess.query(Film).all()
     for year in range(2023, 1884, -1):
         for page in range(1, 25):
             response = requests.get(url=f"https://www.kinopoisk.ru/s/type/film/list/1/order/rating/m_act[year]"
@@ -23,21 +28,21 @@ def main():
                 class_="element width_4") + search_results.find_all(class_="element width_5") + search_results.find_all(
                 class_="element width_6") + search_results.find_all(class_="element width_7")
             for film in films:
-                counter += 1
+                film_counter += 1
+                print(film_counter)
                 right = film.find(class_="right")
                 try:
                     rating = right.find("div").text
                 except AttributeError:
-                    rating = "Unknown"
-                list_ = right.find(class_="links").find_all("li")
+                    rating = -1.0
 
                 picture_link = "https://st.kp.yandex.net" + film.find("p", class_="pic").find('a').find('img').get(
                     "title")
                 film_info = film.find("div", class_="info")
                 name = film_info.find("p", class_="name").find("a").text
                 in_films = False
-                for elem in cursor.execute("""SELECT name FROM films""").fetchall():
-                    if elem[0] == name:
+                for item in films_in_base:
+                    if item.name == name or item.original_name == name:
                         in_films = True
                         break
                 if not in_films:
@@ -45,7 +50,11 @@ def main():
                         type_of_film = film_info.find_all("span", class_="gray")[1].find("i").find("a").get("data-type")
                     except AttributeError:
                         try:
-                            type_of_film = film_info.find_all("span", class_="gray")[1].find('a', class_='lined js-serp-metrika').get("data-type")
+                            type_of_film = film_info.find_all("span",
+                                                              class_="gray")[1].find('a',
+                                                                                     class_='lined '
+                                                                                            'js-serp-metrika').get(
+                                "data-type")
                         except AttributeError:
                             type_of_film = "Unknown"
                     time = film_info.find_all("span", class_="gray")[0].text
@@ -58,80 +67,40 @@ def main():
                         time = time_and_original[-1]
                     except Exception:
                         original_name = None
+                    if "мин" not in time:
+                        time = "Unknown"
                     gray = film_info.find_all("span", class_="gray")[1].text.split('\n')
                     country = gray[0].split(',')[0]
-                    genres = gray[1]
-
+                    if "..." in country:
+                        country = country.split('...')[0]
+                    genres = gray[1].split(', ')
+                    for x in range(0, len(genres)):
+                        if '(' in genres[x]:
+                            genres[x] = genres[x].replace('(', '')
+                        if ')' in genres[x]:
+                            genres[x] = genres[x].replace(')', '')
+                        if '...' in genres[x]:
+                            genres[x] = genres[x].replace('...', '')
+                    genres = str(genres)
                     film_id = film_info.find("p", class_="name").find("a").get("href").split('/')[2]
-
                     trailer_link = f"https://widgets.kinopoisk.ru/discovery/film/{film_id}?noAd=1&hidden=&onlyPlayer=1"
                     res = requests.get(trailer_link)
                     if res.status_code != 200:
                         trailer_link = None
 
-                    actor_link = f"https://www.kinopoisk.ru/film/{film_id}/cast/#actor"
-                    res = requests.get(actor_link)
-                    if res.status_code == 200:
-                        try:
-                            actors = {}
-                            soup_3 = BeautifulSoup(res.text, 'lxml')
-                            table = soup_3.find('div', class_="block_left")
-                            roles = []
-                            for i in table.find_all('a'):
-                                if "name=" in str(i):
-                                    roles.append(str(i).split('"')[1])
-                            for keys in roles:
-                                actors[keys] = []
-                            x = -1
-                            for num, actor_about in zip(table.find_all('div', class_="num"),
-                                                        table.find_all('div', class_="actorInfo")):
-                                if num.text == '1.':
-                                    x += 1
-                                actor_info = {
-                                    'photo': "https://st.kp.yandex.net" + actor_about.find('div', class_="photo").find(
-                                        'a').get(
-                                        'href'),
-                                    'name': actor_about.find('div', class_="info").find('div', class_="name").find(
-                                        'a').text,
-                                    "source_link": "https://www.kinopoisk.ru/" + actor_about.find('div',
-                                                                                                  class_="info").find(
-                                        'div', class_="name").find('a').get("href")
-                                }
-
-                                actors[roles[x]].append(actor_info)
-                        except AttributeError:
-                            actors = None
-                    else:
-                        actors = None
-                    if not time:
-                        time = 'Unknown'
-
                     link_to_source = "https://www.kinopoisk.ru" + film_info.find("p", class_="name").find("a").get(
                         "href")
-                    result = (name, original_name, rating, time, country, genres, year, picture_link, trailer_link, type_of_film,
-                              actor_link, str(actors), link_to_source)
-                    cursor.execute("INSERT INTO films VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", result)
-                    connector.commit()
-                print(counter)
+                    result = (
+                        name, original_name, rating, time, country, genres, year, picture_link,
+                        trailer_link, type_of_film, link_to_source, None)
+                    film_row = Film()
+                    film_row.name, film_row.original_name, film_row.rating, film_row.duration, \
+                        film_row.country, film_row.genres, film_row.year, film_row.poster_link, \
+                        film_row.trailer_link, film_row.type_of_film, film_row.source_link, \
+                        film_row.description = result
+                    db_sess.add(film_row)
+                    db_sess.commit()
 
 
 if __name__ == '__main__':
-    db_name = "films_data.db"
-    connector = sqlite3.connect(db_name, timeout=30)
-    cursor = connector.cursor()
-    cursor.execute("""CREATE TABLE IF NOT EXISTS films(
-    name TEXT,
-    original_name TEXT,
-    rating TEXT,
-    time TEXT,
-    country TEXT,
-    genres TEXT,
-    year INT,
-    poster_link TEXT,
-    trailer_link TEXT,
-    type_of_film TEXT,
-    actor_link TEXT,
-    actors TEXT,
-    source TEXT);
-    """)
     main()
