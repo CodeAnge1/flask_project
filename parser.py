@@ -81,6 +81,8 @@ def main():
                             genres[x] = genres[x].replace(')', '')
                         if '...' in genres[x]:
                             genres[x] = genres[x].replace('...', '')
+                        if '\t' in genres[x]:
+                            genres[x] = genres[x].replace('\t', '')
                     genres = str(genres)
                     film_id = film_info.find("p", class_="name").find("a").get("href").split('/')[2]
                     trailer_link = f"https://widgets.kinopoisk.ru/discovery/film/{film_id}?noAd=1&hidden=&onlyPlayer=1"
