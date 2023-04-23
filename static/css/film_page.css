@@ -1,6 +1,9 @@
 img.poster {
     float: left;
     padding-left: 2%;
+    max-width: 300px;
+    max-height: 450px;
+    margin-bottom: 108px;
 }
 .rowDark {
     font-size: 16px;
@@ -12,24 +15,48 @@ img.poster {
     border-bottom-color: rgba(31,31,31,.1);
 }
 .titleDark {
-    width: 160px;
-    font-size: 16px;
+    position: relative;
+    left: 30px;
+    font-weight: 500;
+    width: 200px;
+    font-size: 1.2rem;
     line-height: 18px;
     color: rgba(0,0,0,0.8);
 }
 .valueDark {
+    position: relative;
+    left: 40px;
+    font-weight: 500;
     display: flex;
-    font-size: 15px;
+    font-size: 1.2rem;
     line-height: 18px;
     color: rgba(0,0,0,.8);
 }
 h1.name {
-    padding-left: 32%;
+    margin-left: 340px;
     font-weight: 800;
     color: black;
 }
+.description {
+    margin: 0;
+    width: 105%;
+    text-indent: 30px;
+    padding-top: 10px;
+    padding-left: 320px;
+    font-size: 1.2rem;
+}
+.authorized-only {
+    margin: 0;
+    width: 78%;
+    margin-top: 20px;
+    margin-left: 320px;
+    font-size: 1.2rem;
+}
 .trailer {
     float: right;
+}
+.button-block {
+    padding-top: 10px;
 }
 .style_button {
     border: 2px solid black;

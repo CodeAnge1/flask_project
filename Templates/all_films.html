@@ -7,122 +7,81 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="../static/css/all_films.css"/>
-
     <title>Title</title>
 </head>
 {% extends "base.html" %}
 {% block content %}
 <body>
 <div class="film-block">
-    {% for film_group in films_dict['films'] %}
-    {% if loop.first %}
-    <div class="films-row without-bottom">
-        {% for film in film_group %}
-        <div class="film">
-            <div class="image">
-                <a class="styled-a" href="https://www.kinopoisk.ru/film/1072974/sr/1/">
-                    <img class="image"
-                         src="{{film['poster']}}">
-                </a>
-                {% if film['rating'] < 0 %}
-                <div class="film-rating"></div>
-                {% elif film['rating'] > 7.5 %}
-                <div class="film-rating green-rating">{{film['rating']}}</div>
-                {% elif film['rating'] > 5.0 %}
-                <div class="film-rating yellow-rating">{{film['rating']}}</div>
-                {% elif film['rating'] <= 5.0 %}
-                <div class="film-rating red-rating">{{film['rating']}}</div>
+    {% if films_groups[0] %}
+    {% for film_group in films_groups %}
+    {% if loop.first and loop.last %}
+    <div class="films-row all-borders">
+        {% elif loop.first %}
+        <div class="films-row without-bottom">
+            {% elif loop.last %}
+            <div class="films-row without-up">
+                {% else %}
+                <div class="films-row only-side">
+                    {% endif %}
+                    {% for film in film_group %}
+                    <div class="film">
+                        <div class="image">
+                            <a class="styled-a" href="{{url_for('film_page', film_id=film['id'])}}">
+                                <img class="image"
+                                     src="{{film['poster']}}">
+                            </a>
+                            {% if film['rating'] < 0 %}
+                            <div class="film-rating"></div>
+                            {% elif film['rating'] > 7.5 %}
+                            <div class="film-rating green-rating">{{film['rating']}}</div>
+                            {% elif film['rating'] > 5.0 %}
+                            <div class="film-rating yellow-rating">{{film['rating']}}</div>
+                            {% elif film['rating'] <= 5.0 %}
+                            <div class="film-rating red-rating">{{film['rating']}}</div>
+                            {% endif %}
+                        </div>
+                        <div class="film-info">
+                            <a class="film-name" href="{{url_for('film_page', film_id=film['id'])}}">
+                                {% if film['name_len'] > 48 %}
+                                <p class="film-name">
+                                    {{film['name'][:45]}}...
+                                </p>
+                                {% else %}
+                                <p class="film-name">
+                                    {{film['name']}}
+                                </p>
+                                {% endif %}
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+                {% else %}
+                <div class="all-borders no-films">
+                    <div class="film not-found-film">
+                        <img class="not-found-img" src="../static/images/page_not_found.png">
+                        <div class="film-rating red-rating error-rating"><p>
+                            404
+                        </p></div>
+                        <h5>Ненайденный</h5>
+                        <!--                    <h5 class="no-films">-->
+                        <!--                        По вашему запросу ничего не найдено :(-->
+                        <!--                    </h5>-->
+                        <!--                    <h5 class="no-films">-->
+                        <!--                        Попробуйте изменить параметры поиска:-->
+                        <!--                        <a class="redirect" href="{{url_for('search')}}">Тут</a>-->
+                        <!--                    </h5>-->
+                        <!--                    <h5>-->
+                        <!--                        <a class="redirect" href="{{url_for('home')}}">Или вернитесь на главную</a>-->
+                        <!--                    </h5>-->
+                    </div>
+                    <p class="redirect">Измените <a href="/search" style="" class="redirect">парамтеры поиска</a></p>
+                    <p class="redirect">Или вернитесь на <a href="/" class="redirect">главную</a></p>
+                </div>
                 {% endif %}
             </div>
-            <div class="film-info">
-                <a class="film-name" href="https://www.kinopoisk.ru/film/1072974/sr/1/">
-                    {% if film['name_len'] > 48 %}
-                    <p class="film-name">
-                    {{film['name'][:45]}}...
-                    </p>
-                    {% else %}
-                    <p class="film-name">
-                    {{film['name']}}
-                    </p>
-                    {% endif %}
-                </a>
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-    {% elif loop.last %}
-    <div class="films-row without-up">
-        {% for film in film_group %}
-        <div class="film">
-            <div class="image">
-                <a class="styled-a" href="https://www.kinopoisk.ru/film/1072974/sr/1/">
-                    <img class="image"
-                         src="{{film['poster']}}">
-                </a>
-                {% if film['rating'] < 0 %}
-                <div class="film-rating"></div>
-                {% elif film['rating'] > 7.5 %}
-                <div class="film-rating green-rating">{{film['rating']}}</div>
-                {% elif film['rating'] > 5.0 %}
-                <div class="film-rating yellow-rating">{{film['rating']}}</div>
-                {% elif film['rating'] <= 5.0 %}
-                <div class="film-rating red-rating">{{film['rating']}}</div>
-                {% endif %}
-            </div>
-            <div class="film-info">
-                <a class="film-name" href="https://www.kinopoisk.ru/film/1072974/sr/1/">
-                    {% if film['name_len'] > 48 %}
-                    <p class="film-name">
-                    {{film['name'][:45]}}...
-                    </p>
-                    {% else %}
-                    <p class="film-name">
-                    {{film['name']}}
-                    </p>
-                    {% endif %}
-                </a>
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-    {% else %}
-    <div class="films-row only-side">
-        {% for film in film_group %}
-        <div class="film">
-            <div class="image">
-                <a class="styled-a" href="https://www.kinopoisk.ru/film/1072974/sr/1/">
-                    <img class="image"
-                         src="{{film['poster']}}">
-                </a>
-                {% if film['rating'] < 0 %}
-                <div class="film-rating"></div>
-                {% elif film['rating'] > 7.5 %}
-                <div class="film-rating green-rating">{{film['rating']}}</div>
-                {% elif film['rating'] > 5.0 %}
-                <div class="film-rating yellow-rating">{{film['rating']}}</div>
-                {% elif film['rating'] <= 5.0 %}
-                <div class="film-rating red-rating">{{film['rating']}}</div>
-                {% endif %}
-            </div>
-            <div class="film-info">
-                <a class="film-name" href="https://www.kinopoisk.ru/film/1072974/sr/1/">
-                    {% if film['name_len'] > 48 %}
-                    <p class="film-name">
-                    {{film['name'][:45]}}...
-                    </p>
-                    {% else %}
-                    <p class="film-name">
-                    {{film['name']}}
-                    </p>
-                    {% endif %}
-                </a>
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-    {% endif %}
-    {% endfor %}
-</div>
 </body>
 {% endblock %}
 </html>

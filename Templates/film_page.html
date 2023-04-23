@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{name}}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+          crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="../static/css/film_page.css"/>
+</head>
+<body>
+{% extends "base.html" %}
+
+{% block content %}
+<div class="content">
+    <img class="poster"
+         src="{{image}}">
+    <div class="film">
+        <h1 class="name">{{name}}</h1>
+        <div>
+            <div class="rowDark">
+                <div class="titleDark">Страна</div>
+                <div class="valueDark">{{country}}</div>
+            </div>
+            <div class="rowDark">
+                <div class="titleDark">Год производства</div>
+                <div class="valueDark">{{year}}</div>
+            </div>
+            <div class="rowDark">
+                <div class="titleDark">Длительность</div>
+                <div class="valueDark">{{duration}}</div>
+            </div>
+            <div class="rowDark">
+                <div class="titleDark">Жанр</div>
+                <div class="valueDark">{{genres}}</div>
+            </div>
+            {% if original_name %}
+            <div class="rowDark">
+                <div class="titleDark">Оригинальное название</div>
+                <div class="valueDark">{{original_name}}</div>
+            </div>
+            {% endif %}
+        </div>
+        {% if current_user.is_authenticated %}
+        <div class="description">
+            Времена правления династии Токугава. Один из самых ловких нинздя и печально известный наемный убийца
+            попадает в плен, но у него появляется шанс избежать казни. Для этого ему нужно отправиться на окутанный
+            легендами загадочный остров и найти там эликсир бессмертия.
+        </div>
+        <div class="button-block">
+            <button class="style_button"
+                    onclick="window.location='{{trailer_link}}';">
+                Трейлер
+            </button>
+            <button class="style_button"
+                    onclick="window.location='{{source_link}}';">
+                Cмотреть
+            </button>
+        </div>
+        {% else %}
+        <div class="authorized-only alert alert-info" role="alert">
+            Возможность просматривать описание и ссылки на источники есть только у авторизованных пользователей.
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+</body>
+</html>

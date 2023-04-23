@@ -1,5 +1,7 @@
 import sqlalchemy as sa
-from .db_session import SqlAlchemyBase
+
+from sqlalchemy import orm
+from .films_db_session import SqlAlchemyBase
 
 
 class Film(SqlAlchemyBase):
@@ -17,3 +19,5 @@ class Film(SqlAlchemyBase):
     type_of_film = sa.Column(sa.String, nullable=True)
     source_link = sa.Column(sa.String, nullable=True)
     description = sa.Column(sa.String, nullable=True)
+    high_poster_link = sa.Column(sa.String, nullable=True)
+    # medias = orm.relationship("Media", back_populates='film')

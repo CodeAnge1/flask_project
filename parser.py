@@ -1,15 +1,15 @@
 import requests
 
-from data import db_session
-from data.films import Film
+from films_data import films_db_session
+from films_data.films import Film
 from bs4 import BeautifulSoup
 
 
 def main():
     film_counter = 0
     db_name = "db/films.db"
-    db_session.global_init(db_name)
-    db_sess = db_session.create_session()
+    films_db_session.global_init(db_name)
+    db_sess = films_db_session.create_session()
     films_in_base = db_sess.query(Film).all()
     for year in range(2023, 1884, -1):
         for page in range(1, 25):
@@ -47,14 +47,14 @@ def main():
                         break
                 if not in_films:
                     try:
-                        type_of_film = film_info.find_all("span", class_="gray")[1].find("i").find("a").get("data-type")
+                        type_of_film = film_info.find_all("span", class_="gray")[1].find("i").find("a").get("films_data-type")
                     except AttributeError:
                         try:
                             type_of_film = film_info.find_all("span",
                                                               class_="gray")[1].find('a',
                                                                                      class_='lined '
                                                                                             'js-serp-metrika').get(
-                                "data-type")
+                                "films_data-type")
                         except AttributeError:
                             type_of_film = "Unknown"
                     time = film_info.find_all("span", class_="gray")[0].text

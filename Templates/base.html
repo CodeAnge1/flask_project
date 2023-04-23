@@ -30,15 +30,26 @@
                 <li><a href="#">x5</a></li>
             </ul>
         </nav>
+        <div class="login-logout">
+            {% if current_user.is_authenticated %}
+            <h5 style="color: white; text-decoration: none;" class="navbar-brand">{{ current_user.login }}</h5>
+            <a style="position: relative; bottom: 5px;" class="btn btn-danger" href="/logout">Выйти</a>
+            {% else %}
+            <p>
+                <a class="btn btn-primary " href="/registration">Зарегистрироваться</a>
+                <a class="btn btn-success" href="/login">Войти</a>
+            </p>
+            {% endif %}
+        </div>
     </header>
     <!-- Begin page content -->
     <main role="main" class="container main-content">
         {% block content %}
         {% endblock %}
     </main>
-    <footer>
-        <p>© 2018 Gandalf</p>
-    </footer>
+<!--    <footer>-->
+<!--        <p>© 2018 Gandalf</p>-->
+<!--    </footer>-->
 </div>
 </body>
 </html>

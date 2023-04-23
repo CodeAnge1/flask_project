@@ -1,0 +1,27 @@
+h1 {
+    padding-top: 10px;
+    text-align: center;
+}
+form {
+    position: relative;
+    top: 20px;
+    width: 500px;
+    align: center;
+    right: 17%;
+    border: 2px solid;
+    background-color: #5fd4a9;
+}
+.main-content {
+    margin-bottom: 105px;
+}
+p {
+    font-size: 1.2rem;
+    position: relative;
+    left: 15%;
+    width: 350px;
+}
+.login-logout {
+    position: relative;
+    bottom: 30px; right: 10px;
+    float: right;
+}

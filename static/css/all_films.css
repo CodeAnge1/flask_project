@@ -8,6 +8,10 @@ body, html {
 /*
 #6fd9d5
 */
+.all-borders {
+    border: solid 2px black;
+    margin-bottom: 50px;
+}
 .without-up {
     border: solid 2px black;
     border-top: solid 0px black;
@@ -22,12 +26,55 @@ body, html {
     border-bottom: solid 0px black;
     border-top: solid 0px black;
 }
+.not-found-img {
+    z-index: -10;
+    margin-top: 10px;
+}
+h5.no-films {
+    z-index: 50;
+    text-align: left;
+    margin-left: 10px;
+    margin-top: 15px;
+}
+a.redirect {
+    text-decoration: none;
+}
+.not-found-film {
+    position: relative;
+    padding: 0;
+    left: 125px;
+    width: 200px;
+}
+div.error-rating {
+    padding: 0px;
+    margin-top: 10px;
+    margin-right: 0px;
+    margin-bottom: 0px;
+}
+p.error-rating {
+    padding: 0px;
+    margin-right: 0px;
+}
+p.redirect {
+    font-size: 1.2rem;
+}
+div.no-films {
+    position: relative;
+    z-index: 0;
+    bottom: 30px;
+    width: 500px;
+    margin-left: 28%;
+    background: #5fd4a9;
+    margin-bottom: 90px;
+    text-align: center;
+}
 .film {
     border: solid 2px black;
     border-bottom: solid 3px black;
     margin: 22px;
     padding: 0px;
-    max-height: 380px;
+    max-height: 400px;
+    background-color: #292828;
 }
 .film-info {
     margin-top: -20px;
