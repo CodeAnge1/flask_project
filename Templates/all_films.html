@@ -15,73 +15,179 @@
 <div class="film-block">
     {% if films_groups[0] %}
     {% for film_group in films_groups %}
-    {% if loop.first and loop.last %}
-    <div class="films-row all-borders">
-        {% elif loop.first %}
-        <div class="films-row without-bottom">
-            {% elif loop.last %}
-            <div class="films-row without-up">
-                {% else %}
-                <div class="films-row only-side">
+    {% if loop.first %}
+    <div style="justify-content: center; display: flex;" class="films-row without-bottom">
+        {% else %}
+        <div style="justify-content: center; display: flex;" class="films-row only-side">
+            {% endif %}
+            {% for film in film_group %}
+            <div class="film">
+                <div class="image">
+                    <a class="styled-a" target="_blank" href="{{url_for('film_page', film_id=film['id'])}}">
+                        <img class="image"
+                             src="{{film['poster']}}">
+                    </a>
+                    {% if film['rating'] < 0 %}
+                    <div class="film-rating"></div>
+                    {% elif film['rating'] > 7.5 %}
+                    <div class="film-rating green-rating">{{film['rating']}}</div>
+                    {% elif film['rating'] > 5.0 %}
+                    <div class="film-rating yellow-rating">{{film['rating']}}</div>
+                    {% elif film['rating'] <= 5.0 %}
+                    <div class="film-rating red-rating">{{film['rating']}}</div>
                     {% endif %}
-                    {% for film in film_group %}
-                    <div class="film">
-                        <div class="image">
-                            <a class="styled-a" href="{{url_for('film_page', film_id=film['id'])}}">
-                                <img class="image"
-                                     src="{{film['poster']}}">
-                            </a>
-                            {% if film['rating'] < 0 %}
-                            <div class="film-rating"></div>
-                            {% elif film['rating'] > 7.5 %}
-                            <div class="film-rating green-rating">{{film['rating']}}</div>
-                            {% elif film['rating'] > 5.0 %}
-                            <div class="film-rating yellow-rating">{{film['rating']}}</div>
-                            {% elif film['rating'] <= 5.0 %}
-                            <div class="film-rating red-rating">{{film['rating']}}</div>
-                            {% endif %}
-                        </div>
-                        <div class="film-info">
-                            <a class="film-name" href="{{url_for('film_page', film_id=film['id'])}}">
-                                {% if film['name_len'] > 48 %}
-                                <p class="film-name">
-                                    {{film['name'][:45]}}...
-                                </p>
-                                {% else %}
-                                <p class="film-name">
-                                    {{film['name']}}
-                                </p>
-                                {% endif %}
-                            </a>
-                        </div>
-                    </div>
-                    {% endfor %}
                 </div>
-                {% endfor %}
-                {% else %}
-                <div class="all-borders no-films">
-                    <div class="film not-found-film">
-                        <img class="not-found-img" src="../static/images/page_not_found.png">
-                        <div class="film-rating red-rating error-rating"><p>
-                            404
-                        </p></div>
-                        <h5>Ненайденный</h5>
-                        <!--                    <h5 class="no-films">-->
-                        <!--                        По вашему запросу ничего не найдено :(-->
-                        <!--                    </h5>-->
-                        <!--                    <h5 class="no-films">-->
-                        <!--                        Попробуйте изменить параметры поиска:-->
-                        <!--                        <a class="redirect" href="{{url_for('search')}}">Тут</a>-->
-                        <!--                    </h5>-->
-                        <!--                    <h5>-->
-                        <!--                        <a class="redirect" href="{{url_for('home')}}">Или вернитесь на главную</a>-->
-                        <!--                    </h5>-->
-                    </div>
-                    <p class="redirect">Измените <a href="/search" style="" class="redirect">парамтеры поиска</a></p>
-                    <p class="redirect">Или вернитесь на <a href="/" class="redirect">главную</a></p>
+                <div class="film-info">
+                    <a class="film-name" target="_blank" href="{{url_for('film_page', film_id=film['id'])}}">
+                        {% if film['name_len'] > 48 %}
+                        <p class="film-name">
+                            {{film['name'][:45]}}...
+                        </p>
+                        {% else %}
+                        <p class="film-name">
+                            {{film['name']}}
+                        </p>
+                        {% endif %}
+                    </a>
                 </div>
-                {% endif %}
             </div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+        {% if params %}
+        <div class="navigation without-up">
+            {% if max_page == 1 %}
+            <a class="this-page" href="/films/{{max_page}}{{params}}">1</a>
+            {% elif max_page == 2 %}
+            <a class="this-page" href="/films/1{{params}}">1</a>
+            <a class="this-page" href="/films/{{max_page}}{{params}}">2</a>
+            {% elif max_page == 3 %}
+            <a class="this-page" href="/films/1{{params}}">1</a>
+            <a class="this-page" href="/films/2{{params}}">2</a>
+            <a class="this-page" href="/films/{{max_page}}{{params}}">3</a>
+            {% elif page == 1 %}
+            <a class="this-page" href="/films/{{page}}{{params}}">{{page}}</a>
+            <a class="page" href="/films/2{{params}}">2</a>
+            <a class="page" href="/films/3{{params}}">3</a>
+            <a class="page" href="/films/{{page+1}}{{params}}">»</a>
+            <a class="page" href="/films/{{max_page}}{{params}}">»»</a>
+            {% elif page == 2 %}
+            <a class="page" href="/films/1{{params}}">««</a>
+            <a class="page" href="/films/{{page - 1}}{{params}}">«</a>
+            <a class="page" href="/films/1{{params}}">1</a>
+            <a class="this-page" href="/films/{{page}}{{params}}">{{page}}</a>
+            <a class="page" href="/films/3{{params}}">3</a>
+            <a class="page" href="/films/4{{params}}">4</a>
+            <a class="page" href="/films/{{page+1}}{{params}}">»</a>
+            <a class="page" href="/films/{{max_page}}{{params}}">»»</a>
+            {% elif page == (max_page - 1) %}
+            <a class="page" href="/films/1/{{params}}">««</a>
+            <a class="page" href="/films/{{page - 1}}/{{params}}">«</a>
+            <a class="page" href="/films/{{page - 2}}/{{params}}">{{page - 2}}</a>
+            <a class="page" href="/films/{{page - 1}}/{{params}}">{{page - 1}}</a>
+            <a class="this-page" href="/films/{{page}}/{{params}}">{{page}}</a>
+            <a class="page" href="/films/{{page + 1}}/{{params}}">{{page + 1}}</a>
+            <a class="page" href="/films/{{page+1}}/{{params}}">»</a>
+            <a class="page" href="/films/{{max_page}}/{{params}}">»»</a>
+            {% elif page == max_page %}
+            <a class="page" href="/films/1{{params}}">««</a>
+            <a class="page" href="/films/{{page - 1}}{{params}}">«</a>
+            <a class="page" href="/films/{{page - 2}}{{params}}">{{page - 2}}</a>
+            <a class="page" href="/films/{{page - 1}}{{params}}">{{page - 1}}</a>
+            <a class="this-page" href="/films/{{page}}{{params}}">{{page}}</a>
+            {% else %}
+            <a class="page" href="/films/1{{params}}">««</a>
+            <a class="page" href="/films/{{page - 1}}{{params}}">«</a>
+            <a class="page" href="/films/{{page - 2}}{{params}}">{{page - 2}}</a>
+            <a class="page" href="/films/{{page - 1}}{{params}}">{{page - 1}}</a>
+            <a class="this-page" href="/films/{{page}}{{params}}">{{page}}</a>
+            <a class="page" href="/films/{{page + 1}}{{params}}">{{page + 1}}</a>
+            <a class="page" href="/films/{{page + 2}}{{params}}">{{page + 2}}</a>
+            <a class="page" href="/films/{{page+1}}{{params}}">»</a>
+            <a class="page" href="/films/{{max_page}}{{params}}">»»</a>
+            {% endif %}
+            <div style="margin-bottom: 30px;"></div>
+        </div>
+        {% else %}
+        <div class="navigation without-up">
+            {% if max_page == 1 %}
+            <a class="this-page" href="/films/{{max_page}}">1</a>
+            {% elif max_page == 2 %}
+            <a class="this-page" href="/films/1{{params}}">1</a>
+            <a class="this-page" href="/films/{{max_page}}">2</a>
+            {% elif max_page == 3 %}
+            <a class="this-page" href="/films/1{{params}}">1</a>
+            <a class="this-page" href="/films/2{{params}}">2</a>
+            <a class="this-page" href="/films/{{max_page}}">3</a>
+            {% elif page == 1 %}
+            <a class="this-page" href="/films/{{page}}">{{page}}</a>
+            <a class="page" href="/films/2">2</a>
+            <a class="page" href="/films/3">3</a>
+            <a class="page" href="/films/{{page+1}}">»</a>
+            <a class="page" href="/films/{{max_page}}">»»</a>
+            {% elif page == 2 %}
+            <a class="page" href="/films/1">««</a>
+            <a class="page" href="/films/{{page - 1}}">«</a>
+            <a class="page" href="/films/1">1</a>
+            <a class="this-page" href="/films/{{page}}">{{page}}</a>
+            <a class="page" href="/films/3">3</a>
+            <a class="page" href="/films/4">4</a>
+            <a class="page" href="/films/{{page+1}}">»</a>
+            <a class="page" href="/films/{{max_page}}">»»</a>
+            {% elif page == (max_page - 1) %}
+            <a class="page" href="/films/1">««</a>
+            <a class="page" href="/films/{{page - 1}}">«</a>
+            <a class="page" href="/films/{{page - 2}}">{{page - 2}}</a>
+            <a class="page" href="/films/{{page - 1}}">{{page - 1}}</a>
+            <a class="this-page" href="/films/{{page}}">{{page}}</a>
+            <a class="page" href="/films/{{page + 1}}">{{page + 1}}</a>
+            <a class="page" href="/films/{{page+1}}">»</a>
+            <a class="page" href="/films/{{max_page}}">»»</a>
+            {% elif page == max_page %}
+            <a class="page" href="/films/1">««</a>
+            <a class="page" href="/films/{{page - 1}}">«</a>
+            <a class="page" href="/films/{{page - 2}}">{{page - 2}}</a>
+            <a class="page" href="/films/{{page - 1}}">{{page - 1}}</a>
+            <a class="this-page" href="/films/{{page}}">{{page}}</a>
+            {% else %}
+            <a class="page" href="/films/1">««</a>
+            <a class="page" href="/films/{{page - 1}}">«</a>
+            <a class="page" href="/films/{{page - 2}}">{{page - 2}}</a>
+            <a class="page" href="/films/{{page - 1}}">{{page - 1}}</a>
+            <a class="this-page" href="/films/{{page}}">{{page}}</a>
+            <a class="page" href="/films/{{page + 1}}">{{page + 1}}</a>
+            <a class="page" href="/films/{{page + 2}}">{{page + 2}}</a>
+            <a class="page" href="/films/{{page+1}}">»</a>
+            <a class="page" href="/films/{{max_page}}">»»</a>
+            {% endif %}
+            <div style="margin-bottom: 30px;"></div>
+        </div>
+        {% endif %}
+        {% else %}
+        <div class="all-borders no-films" style="background: linear-gradient(to bottom right, rgba(0, 255, 0, 0.7), #68C7FF, rgba(0, 255, 0, 0.7));">
+            <script>document.getElementsByClassName("film-block")[0].style="background: none;"</script>
+            <div class="film not-found-film" style="background-color: #FFB339;">
+                <img class="not-found-img" src="../static/images/page_not_found.png">
+                <div class="film-rating red-rating error-rating"><p>
+                    404
+                </p></div>
+                <h5>Неопознанный</h5>
+                <!--                    <h5 class="no-films">-->
+                <!--                        По вашему запросу ничего не найдено :(-->
+                <!--                    </h5>-->
+                <!--                    <h5 class="no-films">-->
+                <!--                        Попробуйте изменить параметры поиска:-->
+                <!--                        <a class="redirect" href="{{url_for('search')}}">Тут</a>-->
+                <!--                    </h5>-->
+                <!--                    <h5>-->
+                <!--                        <a class="redirect" href="{{url_for('home')}}">Или вернитесь на главную</a>-->
+                <!--                    </h5>-->
+            </div>
+            <p class="redirect">Измените <a href="/search" style="" class="redirect">парамтеры поиска</a></p>
+            <p class="redirect">Или вернитесь на <a href="/" class="redirect">главную</a></p>
+        </div>
+        {% endif %}
+    </div>
 </body>
 {% endblock %}
 </html>

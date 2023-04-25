@@ -44,18 +44,29 @@
             {% endif %}
         </div>
         {% if current_user.is_authenticated %}
+        {% if description %}
         <div class="description">
-            Времена правления династии Токугава. Один из самых ловких нинздя и печально известный наемный убийца
-            попадает в плен, но у него появляется шанс избежать казни. Для этого ему нужно отправиться на окутанный
-            легендами загадочный остров и найти там эликсир бессмертия.
+            {{description}}
         </div>
+        {% else %}
+        <div class="authorized-only alert alert-info" role="alert">
+            Извинте, мы не смогли загрузить описание данного фильма. Возможно оно отсутствует. :(
+        </div>
+        {% endif %}
         <div class="button-block">
+            {% if trailer_link != "None" %}
             <button class="style_button"
-                    onclick="window.location='{{trailer_link}}';">
+                    onclick="window.open('{{trailer_link}}');">
                 Трейлер
             </button>
+            {% else %}
+            <button class="style_button_without_hover"
+                    onclick="window.open('{{trailer_link}}');">
+                Трейлер
+            </button>
+            {% endif %}
             <button class="style_button"
-                    onclick="window.location='{{source_link}}';">
+                    onclick="window.open('{{source_link}}');">
                 Cмотреть
             </button>
         </div>

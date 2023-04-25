@@ -20,4 +20,5 @@ class Film(SqlAlchemyBase):
     source_link = sa.Column(sa.String, nullable=True)
     description = sa.Column(sa.String, nullable=True)
     high_poster_link = sa.Column(sa.String, nullable=True)
+    orig_poster_link = sa.Column(sa.String, nullable=True)
     # medias = orm.relationship("Media", back_populates='film')
