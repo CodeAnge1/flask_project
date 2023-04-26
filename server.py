@@ -1,7 +1,11 @@
 import os
+import sqlite3
+
+import sqlalchemy.orm
 from tqdm import tqdm
 import random
 import requests
+from datetime import datetime
 
 from flask_caching import Cache
 from flask import Flask, render_template, request, url_for, redirect
@@ -145,7 +149,6 @@ def logout():
 # @cache.cached()
 def films(page=1):
     year_f, year_to = 0, 9999
-    new_db_req = []
     params = None
     dict_params = {}
     if '?' in request.url:
@@ -165,76 +168,92 @@ def films(page=1):
                     year_f = int(dict_params['year_from'])
                 if dict_params['year_to']:
                     year_to = int(dict_params['year_to'])
-            db_req = films_db_sess.query(Film).filter(year_f <= Film.year, Film.year <= year_to, Film.country.like(f"%{dict_params['film_contry']}%"), (
-                    Film.name.like(f"%{dict_params['film_name']}%") | (
-                Film.original_name.like(f"%{dict_params['film_name']}%"))))
+                db_req = films_db_sess.query(Film).filter(year_f <= Film.year, Film.year <= year_to, Film.country.like(f"%{dict_params['film_contry']}%"), (
+                        Film.name.like(f"%{dict_params['film_name']}%") | (
+                    Film.original_name.like(f"%{dict_params['film_name']}%"))))
+            else:
+                db_req = films_db_sess.query(Film)
         if dict_params['film_genres']:
-            new_db_req = list(db_req)
             genres = dict_params['film_genres'].split(',+')
-            for i in tqdm(db_req):
-                for genre in genres:
-                    if genre not in i.genres:
-                        new_db_req.remove(i)
-                        break
-        if new_db_req:
-            count = len(new_db_req)
-            req = new_db_req[(50 * (page - 1)):(50 * page) + 1]
-            film_per_page_count = len(req)
-        else:
-            req = db_req.limit(FILMS_PER_PAGE).offset((page - 1) * FILMS_PER_PAGE)
-            count = db_req.count()
-            film_per_page_count = req.count()
+            for genre in genres:
+                db_req1 = films_db_sess.query(Film).filter(Film.country.like(f"%{dict_params['film_contry']}%"), (
+                                                              Film.name.like(f"%{dict_params['film_name']}%") | (
+                                                          Film.original_name.like(f"%{dict_params['film_name']}%"))),
+                                                       Film.genres.like(f"%{genre}%"))
+                try:
+                    if dict_params['this_only'] == "True":
+                        db_req = db_req.intersect(db_req1)
+                    else:
+                        if genres.index(genre) == 0:
+                            db_req = db_req.intersect(db_req1)
+                        else:
+                            db_req = db_req.union(db_req1)
+                except AttributeError:
+                    db_req = None
+                    break
+                try:
+                    count = db_req.count()
+                except Exception:
+                    db_req = None
+                    count = 0
     else:
-        req = films_db_sess.query(Film).limit(FILMS_PER_PAGE).offset((page - 1) * FILMS_PER_PAGE)
-        count = films_db_sess.query(Film).count()
+        db_req = films_db_sess.query(Film)
+        count = db_req.count()
+    if db_req:
+        req = db_req.limit(FILMS_PER_PAGE).offset((page - 1) * FILMS_PER_PAGE)
         film_per_page_count = req.count()
-    if film_per_page_count < 5:
-        for i in req:
-            film_info = {'id': i.film_id, 'name': i.name, 'name_len': len(i.name), 'rating': i.rating}
-            if i.orig_poster_link:
-                image = i.orig_poster_link
-            else:
-                if i.high_poster_link and "no-poster.gif" not in i.poster_link:
-                    image = i.high_poster_link[:-7] + "orig"
-                elif i.high_poster_link:
-                    image = i.high_poster_link
+        if film_per_page_count < 5:
+            for i in req:
+                film_info = {'id': i.film_id, 'name': i.name, 'name_len': len(i.name), 'rating': i.rating}
+                if i.orig_poster_link:
+                    image = i.orig_poster_link
                 else:
-                    image = get_high_image(i.poster_link)
-                    if not i.high_poster_link:
-                        i.high_poster_link = image
-                    if "no-poster.gif" not in i.poster_link:
-                        image = image[:-7] + "orig"
-                        i.orig_poster_link = image
-                films_db_sess.commit()
-            film_info['poster'] = i.high_poster_link
-            film_group.append(film_info)
-        films_groups.append(film_group)
+                    if i.high_poster_link and "no-poster.gif" not in i.poster_link:
+                        image = i.high_poster_link[:-7] + "orig"
+                    elif i.high_poster_link:
+                        image = i.high_poster_link
+                    else:
+                        image = get_high_image(i.poster_link)
+                        if not i.high_poster_link:
+                            i.high_poster_link = image
+                        if "no-poster.gif" not in i.poster_link:
+                            image = image[:-7] + "orig"
+                            i.orig_poster_link = image
+                    films_db_sess.commit()
+                film_info['poster'] = i.high_poster_link
+                film_group.append(film_info)
+            films_groups.append(film_group)
+        else:
+            for x, i in enumerate(req):
+                film_info = {'id': i.film_id, 'name': i.name, 'name_len': len(i.name), 'rating': i.rating}
+                if i.orig_poster_link:
+                    image = i.orig_poster_link
+                else:
+                    if i.high_poster_link and "no-poster.gif" not in i.poster_link:
+                        image = i.high_poster_link[:-7] + "orig"
+                    elif i.high_poster_link:
+                        image = i.high_poster_link
+                    else:
+                        image = get_high_image(i.poster_link)
+                        if not i.high_poster_link:
+                            i.high_poster_link = image
+                        if "no-poster.gif" not in i.poster_link:
+                            image = image[:-7] + "orig"
+                            i.orig_poster_link = image
+                    films_db_sess.commit()
+                film_info['poster'] = i.high_poster_link
+                film_group.append(film_info)
+                if len(film_group) == 5:
+                    films_groups.append(film_group)
+                    film_group = []
+                elif len(film_group) < 5 and x == film_per_page_count - 1:
+                    films_groups.append(film_group)
+                    film_group = []
+        max_page = count // 50
+        if count % 50 != 0:
+            max_page += 1
     else:
-        for x, i in enumerate(req):
-            film_info = {'id': i.film_id, 'name': i.name, 'name_len': len(i.name), 'rating': i.rating}
-            if i.orig_poster_link:
-                image = i.orig_poster_link
-            else:
-                if i.high_poster_link and "no-poster.gif" not in i.poster_link:
-                    image = i.high_poster_link[:-7] + "orig"
-                elif i.high_poster_link:
-                    image = i.high_poster_link
-                else:
-                    image = get_high_image(i.poster_link)
-                    if not i.high_poster_link:
-                        i.high_poster_link = image
-                    if "no-poster.gif" not in i.poster_link:
-                        image = image[:-7] + "orig"
-                        i.orig_poster_link = image
-                films_db_sess.commit()
-            film_info['poster'] = i.high_poster_link
-            film_group.append(film_info)
-            if len(film_group) == 5:
-                films_groups.append(film_group)
-                film_group = []
-    max_page = count // 50
-    if count % 50 != 0:
-        max_page += 1
+        max_page = 0
     return render_template('all_films.html', films_groups=films_groups, page=page, max_page=max_page, params=params)
 
 
@@ -264,7 +283,6 @@ def film_page(film_id):
             if "no-poster.gif" not in info.poster_link:
                 image = image[:-7] + "orig"
             info.orig_poster_link = image
-            films_db_sess.commit()
     if info.description:
         description = info.description
     else:
