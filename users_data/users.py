@@ -12,8 +12,6 @@ class User(SqlAlchemyBase, UserMixin):
     login = sa.Column(sa.String, index=True, unique=True, nullable=False)
     email = sa.Column(sa.String, index=True, unique=True, nullable=False)
     hashed_password = sa.Column(sa.String, nullable=True)
-    is_developer = sa.Column(sa.Boolean, nullable=False, default=False)
-    developer_key = sa.Column(sa.String, nullable=True, index=True)
 
     def set_password(self, password):
         self.hashed_password = generate_password_hash(password)
