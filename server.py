@@ -1,12 +1,6 @@
 import os
-import sqlite3
 
-import sqlalchemy.orm
-from tqdm import tqdm
-import random
 import requests
-from datetime import datetime
-
 from flask_caching import Cache
 from flask import Flask, render_template, request, url_for, redirect
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
@@ -16,7 +10,7 @@ from users_data.users import User
 from films_data.films import Film
 from films_data import films_db_session
 from users_data import users_db_session
-from forms.user import RegistrationForm, ConfirmForm, LoginForm
+from forms.user import RegistrationForm, LoginForm
 
 FILMS_PER_PAGE = 50
 NO_DESCRIPTION = "FILM_WITHOUT_DESCRIPTION"
@@ -35,8 +29,7 @@ app.config['SECRET_KEY'] = os.urandom(36)
 app.config['TESTING'] = True
 app.config['DEBUG'] = True
 app.config['CACHE_TYPE'] = "SimpleCache"
-app.config['CACHE_DEFAULT_TIMEOUT'] = 180
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///./db/films.db'
+app.config['CACHE_DEFAULT_TIMEOUT'] = 360
 
 cache = Cache(app)
 
@@ -53,7 +46,8 @@ def get_high_image(low_image):
     if "no-poster.gif" not in low_image:
         response = requests.get(low_image)
         response_url = response.url
-        medium_quality_image = f"https://avatars.mds.yandex.net/get-kinopoisk-image/{response_url.split('/')[-3]}/{response_url.split('/')[-2]}/300x450"
+        medium_quality_image = f"https://avatars.mds.yandex.net/get-kinopoisk-image/{response_url.split('/')[-3]}/" \
+                               f"{response_url.split('/')[-2]}/300x450"
     else:
         medium_quality_image = "../static/images/not_found.jpg"
     return medium_quality_image
@@ -128,7 +122,7 @@ def logout():
 
 @app.route('/films')
 @app.route('/films/<int:page>')
-# @cache.cached()
+@cache.cached()
 def films(page=1):
     year_f, year_to = 0, 9999
     country, name = "", ""
@@ -139,19 +133,18 @@ def films(page=1):
     films_groups = []
     film_group = []
     if params:
-        print("yes, params")
         list_of_params = params[1:].split('&')
         for i in list_of_params:
             i = i.split('=')
             dict_params[i[0]] = i[1]
         if dict_params['film_name']:
             name = " ".join(dict_params['film_name'].split('+'))
-        if dict_params['film_contry']:
-            country = dict_params['film_contry']
+        if dict_params['film_country']:
+            country = dict_params['film_country']
         if dict_params['film_current_year']:
             year = dict_params['film_current_year']
             db_req = films_db_sess.query(Film).filter(Film.year == year, Film.country.like(f"%{country}%"), (
-                        Film.name.like(f"%{name}%") | (Film.original_name.like(f"%{name}%"))))
+                    Film.name.like(f"%{name}%") | (Film.original_name.like(f"%{name}%"))))
         elif dict_params['year_from'] or dict_params['year_to']:
             if dict_params['year_from']:
                 year_f = int(dict_params['year_from'])
@@ -170,8 +163,8 @@ def films(page=1):
             for genre in genres:
                 db_req1 = films_db_sess.query(Film).filter(Film.country.like(f"%{country}%"), (
                         Film.name.like(f"%{name}%") | (
-                    Film.original_name.like(f"%{name}%"))),
-                                                           Film.genres.like(f"%{genre}%"))
+                            Film.original_name.like(f"%{name}%"))),
+                                Film.genres.like(f"%{genre}%"))
                 try:
                     if dict_params['this_only'] == "True":
                         db_req = db_req.intersect(db_req1)
@@ -183,11 +176,6 @@ def films(page=1):
                 except AttributeError:
                     db_req = None
                     break
-                try:
-                    count = db_req.count()
-                except Exception:
-                    db_req = None
-                    count = 0
         count = db_req.count()
     else:
         db_req = films_db_sess.query(Film)
@@ -285,7 +273,6 @@ def film_page(film_id):
                 description = res['description']
             else:
                 description = NO_DESCRIPTION
-                print("RERE")
             info.description = description
             films_db_sess.commit()
     else:
@@ -316,7 +303,7 @@ def search():
             genres = ""
         if only:
             only = True
-        return redirect(url_for('films', film_name=name, film_contry=country, film_current_year=c_year,
+        return redirect(url_for('films', film_name=name, film_country=country, film_current_year=c_year,
                                 year_from=year_from, year_to=year_to, film_genres=genres, this_only=only))
 
 

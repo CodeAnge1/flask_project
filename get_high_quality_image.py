@@ -1,6 +1,5 @@
 import requests
 
-from tqdm import tqdm
 from films_data import films_db_session
 from films_data.films import Film
 
@@ -19,7 +18,7 @@ def main():
     db_name = "db/films.db"
     films_db_session.global_init(db_name)
     db_sess = films_db_session.create_session()
-    for i in tqdm(db_sess.query(Film).all()):
+    for i in db_sess.query(Film).all():
         if i.high_poster_link is None:
             i.high_poster_link = get_high_image(i.poster_link)
             db_sess.commit()
