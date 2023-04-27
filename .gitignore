@@ -1,0 +1,8 @@
+.idea
+venv
+.config.py
+.mail_sender.py
+Templates/confirm.html
+Templates/random_movie_page.html
+films_data/media.py
+db/users.db
