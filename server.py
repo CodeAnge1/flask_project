@@ -1,7 +1,6 @@
 import os
 
 import requests
-from flask_caching import Cache
 from flask import Flask, render_template, request, url_for, redirect
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 
@@ -28,8 +27,6 @@ app.template_folder = "Templates"
 app.config['SECRET_KEY'] = os.urandom(36)
 app.config['CACHE_TYPE'] = "SimpleCache"
 app.config['CACHE_DEFAULT_TIMEOUT'] = 360
-
-cache = Cache(app)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
