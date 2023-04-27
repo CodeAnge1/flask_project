@@ -26,8 +26,6 @@ users_db_sess = users_db_session.create_session()
 app = Flask(__name__)
 app.template_folder = "Templates"
 app.config['SECRET_KEY'] = os.urandom(36)
-app.config['TESTING'] = True
-app.config['DEBUG'] = True
 app.config['CACHE_TYPE'] = "SimpleCache"
 app.config['CACHE_DEFAULT_TIMEOUT'] = 360
 
@@ -122,7 +120,6 @@ def logout():
 
 @app.route('/films')
 @app.route('/films/<int:page>')
-@cache.cached()
 def films(page=1):
     year_f, year_to = 0, 9999
     country, name = "", ""
