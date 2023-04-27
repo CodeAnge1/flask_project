@@ -9,7 +9,7 @@ from datetime import datetime
 
 from flask_caching import Cache
 from flask import Flask, render_template, request, url_for, redirect
-from flask_login import LoginManager, login_user, login_required, logout_user
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 
 from config import API_KEYS
 from users_data.users import User
@@ -105,6 +105,8 @@ def registration():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
     form = LoginForm()
     if form.validate_on_submit():
         user = users_db_sess.query(User).filter(User.email == form.email.data).first()
@@ -124,31 +126,12 @@ def logout():
     return redirect('/')
 
 
-# @app.route('/confirm_mail', methods=['POST', 'GET'])
-# def confirm(data):
-#     form = ConfirmForm()
-#     message = "Ваш код подтверждения - " + str(confirmation_code)
-#     send_mail(receiver, message)
-#     render_template('confirm.html', form=form)
-#     if form.validate_on_submit():
-#         if form.code.data != confirmation_code:
-#             return render_template('confirm.html', title='Регистрация',
-#                                    form=form,
-#                                    message="Введён неверный код")
-#         else:
-#             return True
-#     return render_template('confirm.html', form=form)
-#     #     confirmation_code = random.randrange(100000, 999999)
-#     #     message = "Ваш код подтверждения - " + str(confirmation_code)
-#     # users_db_sess.add(class_)
-#     # users_db_sess.commit()
-
-
 @app.route('/films')
 @app.route('/films/<int:page>')
 # @cache.cached()
 def films(page=1):
     year_f, year_to = 0, 9999
+    country, name = "", ""
     params = None
     dict_params = {}
     if '?' in request.url:
@@ -156,30 +139,39 @@ def films(page=1):
     films_groups = []
     film_group = []
     if params:
+        print("yes, params")
         list_of_params = params[1:].split('&')
         for i in list_of_params:
             i = i.split('=')
             dict_params[i[0]] = i[1]
+        if dict_params['film_name']:
+            name = " ".join(dict_params['film_name'].split('+'))
+        if dict_params['film_contry']:
+            country = dict_params['film_contry']
         if dict_params['film_current_year']:
-            db_req = films_db_sess.query(Film).filter(Film.year == dict_params['film_current_year'], Film.country.like(f"%{dict_params['film_contry']}%"), (Film.name.like(f"%{dict_params['film_name']}%") | (Film.original_name.like(f"%{dict_params['film_name']}%"))))
+            year = dict_params['film_current_year']
+            db_req = films_db_sess.query(Film).filter(Film.year == year, Film.country.like(f"%{country}%"), (
+                        Film.name.like(f"%{name}%") | (Film.original_name.like(f"%{name}%"))))
+        elif dict_params['year_from'] or dict_params['year_to']:
+            if dict_params['year_from']:
+                year_f = int(dict_params['year_from'])
+            if dict_params['year_to']:
+                year_to = int(dict_params['year_to'])
+            db_req = films_db_sess.query(Film).filter(year_f <= Film.year, Film.year <= year_to,
+                                                      Film.country.like(f"%{country}%"), (
+                                                              Film.name.like(f"%{name}%") |
+                                                              Film.original_name.like(f"%{name}%")))
         else:
-            if dict_params['year_from'] or dict_params['year_to']:
-                if dict_params['year_from']:
-                    year_f = int(dict_params['year_from'])
-                if dict_params['year_to']:
-                    year_to = int(dict_params['year_to'])
-                db_req = films_db_sess.query(Film).filter(year_f <= Film.year, Film.year <= year_to, Film.country.like(f"%{dict_params['film_contry']}%"), (
-                        Film.name.like(f"%{dict_params['film_name']}%") | (
-                    Film.original_name.like(f"%{dict_params['film_name']}%"))))
-            else:
-                db_req = films_db_sess.query(Film)
+            db_req = films_db_sess.query(Film).filter(Film.country.like(f"%{country}%"), (
+                    Film.name.like(f"%{name}%") |
+                    Film.original_name.like(f"%{name}%")))
         if dict_params['film_genres']:
             genres = dict_params['film_genres'].split(',+')
             for genre in genres:
-                db_req1 = films_db_sess.query(Film).filter(Film.country.like(f"%{dict_params['film_contry']}%"), (
-                                                              Film.name.like(f"%{dict_params['film_name']}%") | (
-                                                          Film.original_name.like(f"%{dict_params['film_name']}%"))),
-                                                       Film.genres.like(f"%{genre}%"))
+                db_req1 = films_db_sess.query(Film).filter(Film.country.like(f"%{country}%"), (
+                        Film.name.like(f"%{name}%") | (
+                    Film.original_name.like(f"%{name}%"))),
+                                                           Film.genres.like(f"%{genre}%"))
                 try:
                     if dict_params['this_only'] == "True":
                         db_req = db_req.intersect(db_req1)
@@ -196,6 +188,7 @@ def films(page=1):
                 except Exception:
                     db_req = None
                     count = 0
+        count = db_req.count()
     else:
         db_req = films_db_sess.query(Film)
         count = db_req.count()
@@ -283,19 +276,24 @@ def film_page(film_id):
             if "no-poster.gif" not in info.poster_link:
                 image = image[:-7] + "orig"
             info.orig_poster_link = image
-    if info.description:
-        description = info.description
-    else:
-        res = get_description(info.source_link.split('/')[4])
-        if res:
-            description = res['description']
+    if not current_user.is_anonymous:
+        if info.description:
+            description = info.description
         else:
-            description = NO_DESCRIPTION
-        info.description = description
-        films_db_sess.commit()
+            res = get_description(info.source_link.split('/')[4])
+            if res['description']:
+                description = res['description']
+            else:
+                description = NO_DESCRIPTION
+                print("RERE")
+            info.description = description
+            films_db_sess.commit()
+    else:
+        description = None
     return render_template("film_page.html", image=image, name=info.name, original_name=info.original_name,
                            country=info.country, year=info.year, duration=info.duration, genres=', '.join(genres),
-                           source_link=info.source_link, trailer_link=info.trailer_link, description=description)
+                           source_link=info.source_link, trailer_link=info.trailer_link, description=description,
+                           no_desc=NO_DESCRIPTION)
 
 
 @app.route('/search', methods=['POST', 'GET'])
@@ -314,6 +312,8 @@ def search():
             for i in genres:
                 genres[genres.index(i)] = i.strip()
             genres = ", ".join(genres)
+        else:
+            genres = ""
         if only:
             only = True
         return redirect(url_for('films', film_name=name, film_contry=country, film_current_year=c_year,

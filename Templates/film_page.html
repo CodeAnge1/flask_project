@@ -44,7 +44,7 @@
             {% endif %}
         </div>
         {% if current_user.is_authenticated %}
-        {% if description %}
+        {% if description != no_desc %}
         <div class="description">
             {{description}}
         </div>
@@ -54,13 +54,13 @@
         </div>
         {% endif %}
         <div class="button-block">
-            {% if trailer_link != "None" %}
+            {% if trailer_link != None or trailer_link %}
             <button class="style_button"
                     onclick="window.open('{{trailer_link}}');">
                 Трейлер
             </button>
             {% else %}
-            <button class="style_button_without_hover"
+            <button disabled class="style_button_without_hover"
                     onclick="window.open('{{trailer_link}}');">
                 Трейлер
             </button>

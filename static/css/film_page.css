@@ -43,10 +43,9 @@ h1.name {
 }
 .description {
     margin: 0;
-    width: 105%;
-    text-indent: 30px;
+    width: 95%;
     padding-top: 10px;
-    padding-left: 320px;
+    padding-left: 350px;
     font-size: 1.2rem;
 }
 .authorized-only {
