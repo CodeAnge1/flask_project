@@ -1,5 +1,4 @@
 # flask_project
-***
 
 Сайт доступен по ссылке https://kinobay.glitch.me/
 
