@@ -194,7 +194,6 @@ def films(page=1):
                         if "no-poster.gif" not in i.poster_link:
                             image = image[:-7] + "orig"
                             i.orig_poster_link = image
-                    films_db_sess.commit()
                 film_info['poster'] = i.high_poster_link
                 film_group.append(film_info)
             films_groups.append(film_group)
@@ -215,7 +214,6 @@ def films(page=1):
                         if "no-poster.gif" not in i.poster_link:
                             image = image[:-7] + "orig"
                             i.orig_poster_link = image
-                    films_db_sess.commit()
                 film_info['poster'] = i.high_poster_link
                 film_group.append(film_info)
                 if len(film_group) == 5:
@@ -268,7 +266,6 @@ def film_page(film_id):
             else:
                 description = NO_DESCRIPTION
             info.description = description
-            films_db_sess.commit()
     else:
         description = None
     return render_template("film_page.html", image=image, name=info.name, original_name=info.original_name,
